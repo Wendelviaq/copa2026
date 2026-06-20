@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copa 2026 — Classificação ao vivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0E1B16;
+    --bg-panel:#15251E;
+    --bg-panel-2:#1B2E25;
+    --line:#27392F;
+    --text:#F4F1E6;
+    --text-dim:#8FA499;
+    --gold:#C9A227;
+    --amber:#D98C3D;
+    --muted:#3C4B41;
+    --danger:#B0473F;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(201,162,39,0.10), transparent 60%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 64px),
+      var(--bg-deep);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    padding:0 0 48px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 0;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    border-bottom:1px solid var(--line);
+    padding-bottom:18px;
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(100deg, transparent 0%, rgba(201,162,39,0.10) 45%, transparent 70%);
+    background-size:220% 100%;
+    animation: sweep 5.5s ease-in-out 1;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{background-position:140% 0;}
+    100%{background-position:-40% 0;}
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  h1{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:clamp(28px, 6vw, 44px);
+    letter-spacing:0.01em;
+    margin:4px 0 10px;
+    line-height:1.02;
+  }
+  .status-row{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+  }
+  .pulse-chip{
+    display:inline-flex; align-items:center; gap:7px;
+    padding:5px 10px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(0,0,0,0.18);
+  }
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--muted);
+    flex-shrink:0;
+  }
+  .dot.live{background:#5BAE7A; box-shadow:0 0 0 0 rgba(91,174,122,0.6); animation:beat 1.8s infinite;}
+  .dot.cache{background:var(--amber);}
+  .dot.off{background:var(--danger);}
+  @keyframes beat{
+    0%{box-shadow:0 0 0 0 rgba(91,174,122,0.55);}
+    70%{box-shadow:0 0 0 7px rgba(91,174,122,0);}
+    100%{box-shadow:0 0 0 0 rgba(91,174,122,0);}
+  }
+  #refreshBtn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--text);
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 14px;
+    cursor:pointer;
+  }
+  #refreshBtn:hover{border-color:var(--gold);}
+  #refreshBtn:active{transform:scale(0.97);}
+
+  /* ---------- LEGEND ---------- */
+  .legend{
+    display:flex; gap:18px; flex-wrap:wrap;
+    margin:18px 0 24px;
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .legend span{display:inline-flex; align-items:center; gap:7px;}
+  .swatch{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+  /* ---------- GROUPS GRID ---------- */
+  .groups{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:14px;
+  }
+  .group-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .group-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg-panel-2);
+  }
+  .group-head .g{
+    font-family:'Anton', sans-serif;
+    font-size:20px;
+    color:var(--gold);
+  }
+  .group-head .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--text-dim);
+    letter-spacing:0.08em;
+  }
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    padding:7px 8px 6px;
+    font-weight:500;
+  }
+  thead th.num, tbody td.num{text-align:center;}
+  tbody td{padding:7px 8px; border-top:1px solid var(--line);}
+  tbody tr td:first-child{
+    border-left:3px solid var(--muted);
+    padding-left:9px;
+  }
+  tbody tr.zone-direct td:first-child{border-left-color:var(--gold);}
+  tbody tr.zone-bubble td:first-child{border-left-color:var(--amber);}
+  .team-name{font-weight:500;}
+  .pts{font-family:'IBM Plex Mono', monospace; font-weight:600;}
+
+  footer{
+    max-width:1180px; margin:30px auto 0; padding:0 16px;
+    font-size:12px; color:var(--text-dim); line-height:1.6;
+  }
+  footer a{color:var(--gold); text-decoration:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    header::before{animation:none;}
+    .dot.live{animation:none;}
+  }
+
+  /* ---------- STATS PANEL ---------- */
+  .stats-panel{
+    margin-top:32px;
+    border-top:1px solid var(--line);
+    padding-top:24px;
+  }
+  .stats-head h2{
+    font-family:'Anton', sans-serif;
+    font-weight:400;
+    font-size:22px;
+    margin:0 0 4px;
+  }
+  .stats-sub{
+    color:var(--text-dim);
+    font-size:13px;
+    margin:0 0 16px;
+    max-width:520px;
+  }
+  .stats-pickers{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  .stats-pickers select{
+    background:var(--bg-panel-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:14px;
+    min-width:170px;
+  }
+  .stats-pickers .vs{
+    font-family:'Anton', sans-serif;
+    color:var(--gold);
+  }
+  .stats-pickers button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:#0E1B16;
+    background:var(--gold);
+    border:none;
+    border-radius:999px;
+    padding:9px 18px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .stats-pickers button:hover{opacity:0.9;}
+  .stats-pickers button:disabled{opacity:0.5; cursor:wait;}
+
+  .stats-result{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+    gap:14px;
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs{
+    display:flex; gap:8px;
+    margin:18px 0 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .tab-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.04em;
+    color:var(--text-dim);
+    background:transparent;
+    border:none;
+    padding:10px 4px 12px;
+    cursor:pointer;
+    position:relative;
+  }
+  .tab-btn.active{color:var(--text);}
+  .tab-btn.active::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-1px;
+    height:2px; background:var(--gold);
+  }
+  .tab-btn + .tab-btn{margin-left:6px;}
+
+  /* ---------- FIXTURES (próximos jogos) ---------- */
+  .fixtures-panel{margin-bottom:34px;}
+  .fixtures-panel h2{
+    font-family:'Anton', sans-serif; font-weight:400; font-size:22px; margin:0 0 4px;
+  }
+  .fixture-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:13px 14px;
+    margin-bottom:10px;
+  }
+  .fixture-top{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .fixture-when{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:var(--text-dim);
+    min-width:118px;
+  }
+  .fixture-match{
+    font-weight:600; font-size:14.5px; flex:1;
+  }
+  .fixture-card button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--text);
+    background:var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .fixture-card button:hover{border-color:var(--gold);}
+  .fixture-card button:disabled{opacity:0.5; cursor:wait;}
+  .fixture-stats{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:12px;
+  }
+  .stat-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+  }
+  .stat-card h3{
+    font-size:16px; margin:0 0 4px;
+  }
+  .stat-card .games-note{
+    font-size:11px; color:var(--text-dim); margin-bottom:12px;
+  }
+  .form-badges{display:flex; gap:5px; margin-bottom:14px;}
+  .form-badge{
+    width:24px;height:24px;border-radius:5px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700;
+  }
+  .form-badge.W{background:rgba(91,174,122,0.18); color:#5BAE7A;}
+  .form-badge.D{background:rgba(217,140,61,0.18); color:var(--amber);}
+  .form-badge.L{background:rgba(176,71,63,0.18); color:var(--danger);}
+  .stat-row{
+    display:flex; justify-content:space-between;
+    font-size:13px; padding:6px 0;
+    border-top:1px solid var(--line);
+  }
+  .stat-row .v{font-family:'IBM Plex Mono', monospace; font-weight:600;}
+  .stats-msg{color:var(--text-dim); font-size:13px;}
+
+  /* ---------- PROBABILIDADES ---------- */
+  .prob-note{
+    font-size:11.5px; color:var(--text-dim); margin:0 0 14px; max-width:560px; line-height:1.5;
+  }
+  .prob-bar{
+    display:flex; width:100%; height:26px; border-radius:6px; overflow:hidden;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    margin-bottom:4px;
+  }
+  .prob-seg{display:flex; align-items:center; justify-content:center; color:#0E1B16; min-width:28px;}
+  .prob-home{background:var(--gold);}
+  .prob-draw{background:var(--muted); color:var(--text);}
+  .prob-away{background:var(--amber);}
+  .prob-labels{
+    display:flex; justify-content:space-between;
+    font-size:10.5px; color:var(--text-dim); margin-bottom:10px;
+  }
+  .fixture-meta{
+    display:flex; gap:16px; font-size:11.5px; color:var(--text-dim); margin-top:8px; flex-wrap:wrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">FIFA World Cup 2026 · EUA · México · Canadá</div>
+    <h1>Classificação em tempo real</h1>
+    <div class="status-row">
+      <span class="pulse-chip"><span class="dot off" id="statusDot"></span><span id="statusText">conectando…</span></span>
+      <span id="lastUpdated">última atualização: —</span>
+      <button id="refreshBtn">Atualizar agora</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="tabClassificacao">Classificação</button>
+    <button class="tab-btn" data-tab="tabApostas">Próximos jogos</button>
+  </nav>
+
+  <div id="tabClassificacao" class="tab-pane">
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--gold)"></span>vaga direta hoje (1º/2º do grupo)</span>
+      <span><span class="swatch" style="background:var(--amber)"></span>na linha dos 8 melhores terceiros</span>
+      <span><span class="swatch" style="background:var(--muted)"></span>fora da zona por enquanto</span>
+    </div>
+
+    <div class="groups" id="groupsContainer"></div>
+  </div>
+
+  <div id="tabApostas" class="tab-pane" style="display:none">
+    <section class="fixtures-panel">
+      <h2>Próximos jogos</h2>
+      <p class="stats-sub">Toque em "Ver estatísticas" pra puxar a forma recente, gols e ambos marcam de cada lado. São dados pro seu palpite — não é recomendação.</p>
+      <div id="fixturesList"><p class="stats-msg">Carregando jogos…</p></div>
+    </section>
+
+    <section class="stats-panel">
+      <div class="stats-head">
+        <h2>Ou compare duas seleções livremente</h2>
+        <p class="stats-sub">Pra rodadas futuras ou qualquer confronto que não esteja na lista acima.</p>
+      </div>
+      <div class="stats-pickers">
+        <select id="teamA"></select>
+        <span class="vs">×</span>
+        <select id="teamB"></select>
+        <button id="compareBtn">Comparar</button>
+      </div>
+      <div class="stats-result" id="statsResult"></div>
+    </section>
+  </div>
+
+  <footer>
+    Posições recalculadas automaticamente conforme os jogos avançam — não é resultado final, é a foto do momento.
+    Fonte ao vivo: API pública e independente de terceiros (não oficial da FIFA); se ela ficar fora do ar, esta página
+    volta a mostrar a última foto salva localmente. Construído para rodar como página estática (GitHub Pages / Netlify).
+  </footer>
+</div>
+
+<script>
+/* ====================== CONFIGURAÇÃO ====================== */
+const LIVE_URL = "https://www.thesportsdb.com/api/v1/json/123/lookuptable.php?l=4429&s=2026"; // TheSportsDB, chave de teste pública "123", sem cadastro
+const REFRESH_MS = 60000; // 60s
+
+/* ====================== SNAPSHOT DE RESERVA ======================
+   Usado se a API ao vivo estiver fora do ar. Atualize manualmente
+   colando uma nova lista aqui sempre que quiser uma base fresca. */
+const FALLBACK_SNAPSHOT = {
+  capturedAt: "2026-06-20T15:16:29-03:00",
+  standings: [
+{"rank":1,"team":{"name":"Mexico","abbreviation":"MEX"},"wins":2,"losses":0,"draws":0,"points":6,"group":"A"},
+{"rank":2,"team":{"name":"Korea Republic","abbreviation":"KOR"},"wins":1,"losses":1,"draws":0,"points":3,"group":"A"},
+{"rank":3,"team":{"name":"Czechia","abbreviation":"CZE"},"wins":0,"losses":1,"draws":1,"points":1,"group":"A"},
+{"rank":4,"team":{"name":"South Africa","abbreviation":"RSA"},"wins":0,"losses":1,"draws":1,"points":1,"group":"A"},
+{"rank":1,"team":{"name":"Canada","abbreviation":"CAN"},"wins":1,"losses":0,"draws":1,"points":4,"group":"B"},
+{"rank":2,"team":{"name":"Switzerland","abbreviation":"SUI"},"wins":1,"losses":0,"draws":1,"points":4,"group":"B"},
+{"rank":3,"team":{"name":"Bosnia and Herzegovina","abbreviation":"BIH"},"wins":0,"losses":1,"draws":1,"points":1,"group":"B"},
+{"rank":4,"team":{"name":"Qatar","abbreviation":"QAT"},"wins":0,"losses":1,"draws":1,"points":1,"group":"B"},
+{"rank":1,"team":{"name":"Brazil","abbreviation":"BRA"},"wins":1,"losses":0,"draws":1,"points":4,"group":"C"},
+{"rank":2,"team":{"name":"Morocco","abbreviation":"MAR"},"wins":1,"losses":0,"draws":1,"points":4,"group":"C"},
+{"rank":3,"team":{"name":"Scotland","abbreviation":"SCO"},"wins":1,"losses":1,"draws":0,"points":3,"group":"C"},
+{"rank":4,"team":{"name":"Haiti","abbreviation":"HTI"},"wins":0,"losses":2,"draws":0,"points":0,"group":"C"},
+{"rank":1,"team":{"name":"USA","abbreviation":"USA"},"wins":2,"losses":0,"draws":0,"points":6,"group":"D"},
+{"rank":2,"team":{"name":"Australia","abbreviation":"AUS"},"wins":1,"losses":1,"draws":0,"points":3,"group":"D"},
+{"rank":3,"team":{"name":"Paraguay","abbreviation":"PAR"},"wins":1,"losses":1,"draws":0,"points":3,"group":"D"},
+{"rank":4,"team":{"name":"Turkiye","abbreviation":"TUR"},"wins":0,"losses":2,"draws":0,"points":0,"group":"D"},
+{"rank":1,"team":{"name":"Germany","abbreviation":"GER"},"wins":1,"losses":0,"draws":0,"points":3,"group":"E"},
+{"rank":2,"team":{"name":"Ivory Coast","abbreviation":"CIV"},"wins":1,"losses":0,"draws":0,"points":3,"group":"E"},
+{"rank":3,"team":{"name":"Ecuador","abbreviation":"ECU"},"wins":0,"losses":1,"draws":0,"points":0,"group":"E"},
+{"rank":4,"team":{"name":"Curacao","abbreviation":"CUW"},"wins":0,"losses":1,"draws":0,"points":0,"group":"E"},
+{"rank":1,"team":{"name":"Netherlands","abbreviation":"NED"},"wins":1,"losses":0,"draws":1,"points":4,"group":"F"},
+{"rank":2,"team":{"name":"Sweden","abbreviation":"SWE"},"wins":1,"losses":1,"draws":0,"points":3,"group":"F"},
+{"rank":3,"team":{"name":"Japan","abbreviation":"JPN"},"wins":0,"losses":0,"draws":1,"points":1,"group":"F"},
+{"rank":4,"team":{"name":"Tunisia","abbreviation":"TUN"},"wins":0,"losses":1,"draws":0,"points":0,"group":"F"},
+{"rank":1,"team":{"name":"New Zealand","abbreviation":"NZL"},"wins":0,"losses":0,"draws":1,"points":1,"group":"G"},
+{"rank":2,"team":{"name":"IR Iran","abbreviation":"IRN"},"wins":0,"losses":0,"draws":1,"points":1,"group":"G"},
+{"rank":3,"team":{"name":"Belgium","abbreviation":"BEL"},"wins":0,"losses":0,"draws":1,"points":1,"group":"G"},
+{"rank":4,"team":{"name":"Egypt","abbreviation":"EGY"},"wins":0,"losses":0,"draws":1,"points":1,"group":"G"},
+{"rank":1,"team":{"name":"Uruguay","abbreviation":"URU"},"wins":0,"losses":0,"draws":1,"points":1,"group":"H"},
+{"rank":2,"team":{"name":"Saudi Arabia","abbreviation":"KSA"},"wins":0,"losses":0,"draws":1,"points":1,"group":"H"},
+{"rank":3,"team":{"name":"Spain","abbreviation":"ESP"},"wins":0,"losses":0,"draws":1,"points":1,"group":"H"},
+{"rank":4,"team":{"name":"Cape Verde","abbreviation":"CPV"},"wins":0,"losses":0,"draws":1,"points":1,"group":"H"},
+{"rank":1,"team":{"name":"Norway","abbreviation":"NOR"},"wins":1,"losses":0,"draws":0,"points":3,"group":"I"},
+{"rank":2,"team":{"name":"France","abbreviation":"FRA"},"wins":1,"losses":0,"draws":0,"points":3,"group":"I"},
+{"rank":3,"team":{"name":"Senegal","abbreviation":"SEN"},"wins":0,"losses":1,"draws":0,"points":0,"group":"I"},
+{"rank":4,"team":{"name":"Iraq","abbreviation":"IRQ"},"wins":0,"losses":1,"draws":0,"points":0,"group":"I"},
+{"rank":1,"team":{"name":"Argentina","abbreviation":"ARG"},"wins":1,"losses":0,"draws":0,"points":3,"group":"J"},
+{"rank":2,"team":{"name":"Austria","abbreviation":"AUT"},"wins":1,"losses":0,"draws":0,"points":3,"group":"J"},
+{"rank":3,"team":{"name":"Jordan","abbreviation":"JOR"},"wins":0,"losses":1,"draws":0,"points":0,"group":"J"},
+{"rank":4,"team":{"name":"Algeria","abbreviation":"DZA"},"wins":0,"losses":1,"draws":0,"points":0,"group":"J"},
+{"rank":1,"team":{"name":"Colombia","abbreviation":"COL"},"wins":1,"losses":0,"draws":0,"points":3,"group":"K"},
+{"rank":2,"team":{"name":"Congo DR","abbreviation":"COD"},"wins":0,"losses":0,"draws":1,"points":1,"group":"K"},
+{"rank":3,"team":{"name":"Portugal","abbreviation":"POR"},"wins":0,"losses":0,"draws":1,"points":1,"group":"K"},
+{"rank":4,"team":{"name":"Uzbekistan","abbreviation":"UZB"},"wins":0,"losses":1,"draws":0,"points":0,"group":"K"},
+{"rank":1,"team":{"name":"England","abbreviation":"ENG"},"wins":1,"losses":0,"draws":0,"points":3,"group":"L"},
+{"rank":2,"team":{"name":"Ghana","abbreviation":"GHA"},"wins":1,"losses":0,"draws":0,"points":3,"group":"L"},
+{"rank":3,"team":{"name":"Panama","abbreviation":"PAN"},"wins":0,"losses":1,"draws":0,"points":0,"group":"L"},
+{"rank":4,"team":{"name":"Croatia","abbreviation":"CRO"},"wins":0,"losses":1,"draws":0,"points":0,"group":"L"}
+  ]
+};
+
+/* ====================== ESTADO ====================== */
+let currentData = null;
+let currentSource = "none"; // "live" | "cache" | "none"
+let lastFetchedAt = null;
+
+/* Tenta normalizar formatos diferentes que a API ao vivo possa devolver.
+   Se a resposta não bater com nenhum formato conhecido, retorna null
+   e a página cai automaticamente para o snapshot de reserva. */
+function normalizeLivePayload(raw){
+  try{
+    // Formato real da TheSportsDB: { "table": [ {strTeam, intWin, intDraw, intLoss, intPoints, strGroup, ...} ] }
+    if(raw && Array.isArray(raw.table) && raw.table.length){
+      const rows = raw.table.map(t=>({
+        rank: Number(t.intRank ?? t.intPosition ?? 0),
+        team: { name: t.strTeam || t.strTeamName || "?", abbreviation: "" },
+        wins: Number(t.intWin ?? 0),
+        losses: Number(t.intLoss ?? 0),
+        draws: Number(t.intDraw ?? 0),
+        points: Number(t.intPoints ?? 0),
+        group: t.strGroup || t.strDivision || null
+      }));
+      const withGroup = rows.filter(r=> r.group);
+      // Só aceitamos o payload ao vivo se a maioria dos times tiver grupo identificado;
+      // sem isso não dá pra montar as tabelas por grupo com confiança.
+      if(withGroup.length >= rows.length * 0.7){
+        // normaliza nomes de grupo tipo "Group A" -> "A"
+        withGroup.forEach(r=> r.group = String(r.group).replace(/group/i,"").trim());
+        return withGroup;
+      }
+      return null;
+    }
+    if(Array.isArray(raw) && raw[0] && raw[0].group && ("points" in raw[0])){
+      return raw;
+    }
+    if(raw && Array.isArray(raw.standings)){
+      return raw.standings;
+    }
+    if(raw && raw.groups && typeof raw.groups === "object"){
+      const out = [];
+      Object.entries(raw.groups).forEach(([letter, teams])=>{
+        (teams||[]).forEach((t, i)=>{
+          out.push({
+            rank: t.rank ?? (i+1),
+            team: { name: t.name || t.team || t.teamName || "?", abbreviation: t.abbreviation || t.code || "" },
+            wins: t.wins ?? t.w ?? 0,
+            losses: t.losses ?? t.l ?? 0,
+            draws: t.draws ?? t.d ?? 0,
+            points: t.points ?? t.pts ?? 0,
+            group: letter
+          });
+        });
+      });
+      if(out.length) return out;
+    }
+    return null;
+  }catch(e){
+    return null;
+  }
+}
+
+async function fetchLive(){
+  try{
+    const res = await fetch(LIVE_URL, { cache:"no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const raw = await res.json();
+    const normalized = normalizeLivePayload(raw);
+    if(!normalized) throw new Error("formato inesperado da API");
+    currentData = normalized;
+    currentSource = "live";
+    lastFetchedAt = new Date();
+  }catch(err){
+    console.warn("Live fetch falhou, usando snapshot de reserva:", err.message);
+    if(currentSource !== "live"){
+      currentData = FALLBACK_SNAPSHOT.standings;
+      currentSource = "cache";
+      lastFetchedAt = new Date(FALLBACK_SNAPSHOT.capturedAt);
+    }
+  }
+  render();
+  updateStatus();
+}
+
+function updateStatus(){
+  const dot = document.getElementById("statusDot");
+  const text = document.getElementById("statusText");
+  const lu = document.getElementById("lastUpdated");
+  dot.className = "dot " + (currentSource === "live" ? "live" : currentSource === "cache" ? "cache" : "off");
+  text.textContent = currentSource === "live" ? "ao vivo" : currentSource === "cache" ? "offline · usando última foto salva" : "sem conexão";
+  if(lastFetchedAt){
+    lu.textContent = "última atualização: " + lastFetchedAt.toLocaleString("pt-BR", { dateStyle:"short", timeStyle:"medium" });
+  }
+}
+
+function computeZones(standings){
+  const byGroup = {};
+  standings.forEach(s=>{
+    byGroup[s.group] = byGroup[s.group] || [];
+    byGroup[s.group].push(s);
+  });
+  // Recalcula a posição dentro do grupo pelos pontos (não confiamos no campo "rank"
+  // vindo da fonte ao vivo, pois nem toda API garante que ele já vem por grupo).
+  Object.values(byGroup).forEach(arr=>{
+    arr.sort((a,b)=> b.points - a.points || b.wins - a.wins || a.losses - b.losses);
+    arr.forEach((t, i)=> t._pos = i + 1);
+  });
+
+  const thirds = Object.values(byGroup)
+    .map(arr=> arr.find(t=> t._pos === 3))
+    .filter(Boolean)
+    .sort((a,b)=> b.points - a.points);
+  const bubbleSet = new Set(thirds.slice(0,8).map(t=> t.group + "|" + t.team.name));
+
+  return { byGroup, bubbleSet };
+}
+
+function render(){
+  const container = document.getElementById("groupsContainer");
+  if(!currentData){ container.innerHTML = "<p style='color:var(--text-dim)'>Carregando…</p>"; return; }
+
+  const { byGroup, bubbleSet } = computeZones(currentData);
+  const letters = Object.keys(byGroup).sort();
+
+  container.innerHTML = letters.map(letter=>{
+    const teams = byGroup[letter];
+    const rows = teams.map(t=>{
+      let zoneClass = "";
+      if(t._pos <= 2) zoneClass = "zone-direct";
+      else if(t._pos === 3 && bubbleSet.has(letter + "|" + t.team.name)) zoneClass = "zone-bubble";
+      return `<tr class="${zoneClass}">
+        <td class="team-name">${t.team.name}</td>
+        <td class="num">${t.wins}</td>
+        <td class="num">${t.draws}</td>
+        <td class="num">${t.losses}</td>
+        <td class="num pts">${t.points}</td>
+      </tr>`;
+    }).join("");
+    return `<div class="group-card">
+      <div class="group-head">
+        <span class="g">Grupo ${letter}</span>
+        <span class="label">V&nbsp;&nbsp;E&nbsp;&nbsp;D&nbsp;&nbsp;PTS</span>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Seleção</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">Pts</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }).join("");
+}
+
+/* ====================== PAINEL DE ESTATÍSTICAS ====================== */
+// IDs reais das seleções na TheSportsDB (conferidos na página da liga 4429).
+const TEAMS = {
+  "Alemanha":133907, "Argélia":134516, "Argentina":134509, "Austrália":134500, "Áustria":135986,
+  "Bélgica":134515, "Bósnia e Herzegovina":134510, "Brasil":134496, "Cabo Verde":136477, "Canadá":140073,
+  "Catar":136472, "Colômbia":134501, "Coreia do Sul":134517, "Costa do Marfim":134502, "Croácia":133912,
+  "Curaçao":140271, "Egito":136138, "Equador":134507, "Escócia":136450, "Espanha":133909,
+  "Estados Unidos":134514, "França":133913, "Gana":134513, "Haiti":140175, "Holanda":133905,
+  "Inglaterra":133914, "Irã":134511, "Iraque":140148, "Japão":134503, "Jordânia":140145,
+  "Marrocos":136139, "México":134497, "Noruega":136516, "Nova Zelândia":137449, "Panamá":136141,
+  "Paraguai":136471, "Portugal":133908, "Arábia Saudita":136137, "Senegal":136143, "África do Sul":136482,
+  "Suécia":133916, "Suíça":134506, "Tunísia":136142, "Turquia":135985, "Uruguai":134504,
+  "Uzbequistão":140151, "República Tcheca":133904, "RD Congo":136475
+};
+
+function populateSelects(){
+  const names = Object.keys(TEAMS).sort((a,b)=> a.localeCompare(b, "pt-BR"));
+  const optsHtml = names.map(n=> `<option value="${n}">${n}</option>`).join("");
+  const selA = document.getElementById("teamA");
+  const selB = document.getElementById("teamB");
+  selA.innerHTML = optsHtml;
+  selB.innerHTML = optsHtml;
+  selA.value = "Brasil";
+  selB.value = "Argentina";
+}
+
+function extractEventsArray(raw){
+  if(!raw) return [];
+  return raw.results || raw.events || raw.lastEvent || raw.event || [];
+}
+
+async function fetchTeamStats(teamId){
+  const url = `https://www.thesportsdb.com/api/v1/json/123/eventslast.php?id=${teamId}`;
+  const res = await fetch(url, { cache:"no-store" });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const raw = await res.json();
+  const events = extractEventsArray(raw)
+    .filter(e=> e && e.intHomeScore !== null && e.intAwayScore !== null && e.intHomeScore !== undefined)
+    .slice(0, 5);
+
+  let scored = 0, conceded = 0, btts = 0, over25 = 0;
+  const form = events.map(e=>{
+    const isHome = String(e.idHomeTeam) === String(teamId);
+    const gf = Number(isHome ? e.intHomeScore : e.intAwayScore);
+    const ga = Number(isHome ? e.intAwayScore : e.intHomeScore);
+    scored += gf; conceded += ga;
+    if(gf > 0 && ga > 0) btts++;
+    if(gf + ga > 2.5) over25++;
+    return gf > ga ? "W" : gf < ga ? "L" : "D";
+  });
+
+  const n = events.length || 1;
+  return {
+    played: events.length,
+    form,
+    avgScored: (scored / n).toFixed(2),
+    avgConceded: (conceded / n).toFixed(2),
+    bttsPct: Math.round((btts / n) * 100),
+    over25Pct: Math.round((over25 / n) * 100)
+  };
+}
+
+/* Estimativa estatística simples (modelo de Poisson) a partir dos gols médios
+   dos últimos 5 jogos de cada lado. NÃO é previsão garantida — é só matemática
+   básica sobre uma amostra pequena, sem considerar lesões, escalação, motivação etc. */
+function poissonPMF(k, lambda){
+  let fact = 1;
+  for(let i=2;i<=k;i++) fact *= i;
+  return Math.exp(-lambda) * Math.pow(lambda, k) / fact;
+}
+
+function computeProbabilities(statsHome, statsAway){
+  if(!statsHome || !statsAway || statsHome.played === 0 || statsAway.played === 0) return null;
+  const lambdaHome = Math.max(0.15, (Number(statsHome.avgScored) + Number(statsAway.avgConceded)) / 2);
+  const lambdaAway = Math.max(0.15, (Number(statsAway.avgScored) + Number(statsHome.avgConceded)) / 2);
+  let pHome = 0, pDraw = 0, pAway = 0;
+  const maxGoals = 8;
+  for(let i=0; i<=maxGoals; i++){
+    for(let j=0; j<=maxGoals; j++){
+      const p = poissonPMF(i, lambdaHome) * poissonPMF(j, lambdaAway);
+      if(i > j) pHome += p; else if(i === j) pDraw += p; else pAway += p;
+    }
+  }
+  const total = pHome + pDraw + pAway || 1;
+  return {
+    home: Math.round((pHome/total) * 100),
+    draw: Math.round((pDraw/total) * 100),
+    away: Math.round((pAway/total) * 100)
+  };
+}
+
+function renderProbBar(homeName, awayName, probs){
+  if(!probs){
+    return `<p class="stats-msg">Dados recentes insuficientes pra estimar.</p>`;
+  }
+  return `<div class="prob-bar">
+    <div class="prob-seg prob-home" style="width:${probs.home}%">${probs.home}%</div>
+    <div class="prob-seg prob-draw" style="width:${probs.draw}%">${probs.draw}%</div>
+    <div class="prob-seg prob-away" style="width:${probs.away}%">${probs.away}%</div>
+  </div>
+  <div class="prob-labels">
+    <span>${homeName}</span><span>Empate</span><span>${awayName}</span>
+  </div>`;
+}
+
+function renderStatCard(name, stats){
+  if(!stats || stats.played === 0){
+    return `<div class="stat-card"><h3>${name}</h3><p class="stats-msg">Sem jogos recentes suficientes na base.</p></div>`;
+  }
+  const badges = stats.form.map(r=> `<span class="form-badge ${r}">${r}</span>`).join("");
+  return `<div class="stat-card">
+    <h3>${name}</h3>
+    <div class="games-note">últimos ${stats.played} jogos</div>
+    <div class="form-badges">${badges}</div>
+    <div class="stat-row"><span>Gols marcados (média)</span><span class="v">${stats.avgScored}</span></div>
+    <div class="stat-row"><span>Gols sofridos (média)</span><span class="v">${stats.avgConceded}</span></div>
+    <div class="stat-row"><span>Jogos com ambos marcando</span><span class="v">${stats.bttsPct}%</span></div>
+    <div class="stat-row"><span>Jogos com +2,5 gols</span><span class="v">${stats.over25Pct}%</span></div>
+  </div>`;
+}
+
+async function compareTeams(){
+  const nameA = document.getElementById("teamA").value;
+  const nameB = document.getElementById("teamB").value;
+  const btn = document.getElementById("compareBtn");
+  const result = document.getElementById("statsResult");
+  if(nameA === nameB){
+    result.innerHTML = `<p class="stats-msg">Escolha duas seleções diferentes.</p>`;
+    return;
+  }
+  btn.disabled = true;
+  result.innerHTML = `<p class="stats-msg">Buscando últimos jogos…</p>`;
+  try{
+    const [statsA, statsB] = await Promise.all([
+      fetchTeamStats(TEAMS[nameA]),
+      fetchTeamStats(TEAMS[nameB])
+    ]);
+    result.innerHTML = renderStatCard(nameA, statsA) + renderStatCard(nameB, statsB);
+  }catch(err){
+    result.innerHTML = `<p class="stats-msg">Não consegui buscar agora (${err.message}). Tenta de novo em alguns segundos.</p>`;
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+/* ====================== ABAS ====================== */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=> b.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach(p=> p.style.display = "none");
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).style.display = "block";
+  });
+});
+
+/* ====================== PRÓXIMOS JOGOS ====================== */
+function extractList(raw, keys){
+  if(!raw) return [];
+  for(const k of keys){
+    if(Array.isArray(raw[k])) return raw[k];
+  }
+  return [];
+}
+
+function fmtDateTime(dateStr, timeStr){
+  try{
+    const iso = timeStr ? `${dateStr}T${timeStr}Z` : `${dateStr}T00:00:00Z`;
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return dateStr || "data a definir";
+    return d.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }catch(e){ return dateStr || "data a definir"; }
+}
+
+async function loadUpcomingFixtures(){
+  const list = document.getElementById("fixturesList");
+  try{
+    const res = await fetch("https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4429", { cache:"no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const raw = await res.json();
+    let events = extractList(raw, ["events", "results"]);
+    events = events
+      .filter(e=> e && e.idHomeTeam && e.idAwayTeam)
+      .sort((a,b)=> new Date(a.dateEvent + "T" + (a.strTime||"00:00:00")) - new Date(b.dateEvent + "T" + (b.strTime||"00:00:00")))
+      .slice(0, 8); // limita a 8 pra não estourar o limite gratuito da API
+
+    if(!events.length){
+      list.innerHTML = `<p class="stats-msg">Não encontrei jogos futuros cadastrados agora. Tenta de novo mais tarde, ou usa o comparador livre abaixo.</p>`;
+      return;
+    }
+
+    list.innerHTML = `<p class="prob-note">As barras abaixo são uma estimativa estatística simples (modelo de Poisson) a partir da média de gols dos últimos 5 jogos de cada seleção. Não considera lesões, escalação ou motivação, e não é garantia de resultado — é só leitura de dados pro seu palpite.</p>` +
+      events.map((e, i)=>{
+      const when = fmtDateTime(e.dateEvent, e.strTime);
+      return `<div class="fixture-card" data-idx="${i}">
+        <div class="fixture-top">
+          <span class="fixture-when">${when}</span>
+          <span class="fixture-match">${e.strHomeTeam} × ${e.strAwayTeam}</span>
+        </div>
+        <div class="fixture-stats" id="fixtureStats${i}"><p class="stats-msg">Calculando…</p></div>
+      </div>`;
+    }).join("");
+
+    // Busca os dados de cada confronto em sequência (não em paralelo), com uma
+    // pequena pausa entre cada um, pra não sobrecarregar a API gratuita.
+    for(let i=0; i<events.length; i++){
+      const e = events[i];
+      const slot = document.getElementById(`fixtureStats${i}`);
+      try{
+        const [sHome, sAway] = await Promise.all([
+          fetchTeamStats(e.idHomeTeam),
+          fetchTeamStats(e.idAwayTeam)
+        ]);
+        const probs = computeProbabilities(sHome, sAway);
+        slot.innerHTML = renderProbBar(e.strHomeTeam, e.strAwayTeam, probs) +
+          `<div class="fixture-meta">
+            <span>${e.strHomeTeam}: ${sHome.played ? sHome.avgScored+" gols/jogo marcados, "+sHome.bttsPct+"% ambos marcam" : "sem dados recentes"}</span>
+            <span>${e.strAwayTeam}: ${sAway.played ? sAway.avgScored+" gols/jogo marcados, "+sAway.bttsPct+"% ambos marcam" : "sem dados recentes"}</span>
+          </div>`;
+      }catch(err){
+        slot.innerHTML = `<p class="stats-msg">Não consegui calcular esse confronto (${err.message}).</p>`;
+      }
+      if(i < events.length - 1) await new Promise(r=> setTimeout(r, 300));
+    }
+  }catch(err){
+    list.innerHTML = `<p class="stats-msg">Não consegui carregar os próximos jogos agora (${err.message}). Usa o comparador livre abaixo enquanto isso.</p>`;
+  }
+}
+
+loadUpcomingFixtures();
+
+populateSelects();
+document.getElementById("compareBtn").addEventListener("click", compareTeams);
+
+document.getElementById("refreshBtn").addEventListener("click", fetchLive);
+
+fetchLive();
+setInterval(fetchLive, REFRESH_MS);
+</script>
+</body>
+</html>
