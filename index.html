@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Copa 2026 — Classificação ao vivo</title>
+<title>Copa 2026 â ClassificaÃ§Ã£o ao vivo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -261,7 +261,7 @@
   }
   .tab-btn + .tab-btn{margin-left:6px;}
 
-  /* ---------- FIXTURES (próximos jogos) ---------- */
+  /* ---------- FIXTURES $prÃ³ximos jogos) ---------- */
   .fixtures-panel{margin-bottom:34px;}
   .fixtures-panel h2{
     font-family:'Anton', sans-serif; font-weight:400; font-size:22px; margin:0 0 4px;
@@ -357,23 +357,23 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">FIFA World Cup 2026 · EUA · México · Canadá</div>
-    <h1>Classificação em tempo real</h1>
+    <div class="eyebrow">FIFA World Cup 2026 Â· EUA Â· MÃ©xico Â· CanadÃ¡</div>
+    <h1>ClassificaÃ§Ã£o em tempo real</h1>
     <div class="status-row">
-      <span class="pulse-chip"><span class="dot off" id="statusDot"></span><span id="statusText">conectando…</span></span>
-      <span id="lastUpdated">última atualização: —</span>
+      <span class="pulse-chip"><span class="dot off" id="statusDot"></span><span id="statusText">conectandoâ¦</span></span>
+      <span id="lastUpdated">Ãºltima atualizaÃ§Ã£o: â</span>
       <button id="refreshBtn">Atualizar agora</button>
     </div>
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="tabClassificacao">Classificação</button>
-    <button class="tab-btn" data-tab="tabApostas">Próximos jogos</button>
+    <button class="tab-btn active" data-tab="tabClassificacao">ClassificaÃ§Ã£o</button>
+    <button class="tab-btn" data-tab="tabApostas">PrÃ³ximos jogos</button>
   </nav>
 
   <div id="tabClassificacao" class="tab-pane">
     <div class="legend">
-      <span><span class="swatch" style="background:var(--gold)"></span>vaga direta hoje (1º/2º do grupo)</span>
+      <span><span class="swatch" style="background:var(--gold)"></span>vaga direta hoje (1Âº/2Âº do grupo)</span>
       <span><span class="swatch" style="background:var(--amber)"></span>na linha dos 8 melhores terceiros</span>
       <span><span class="swatch" style="background:var(--muted)"></span>fora da zona por enquanto</span>
     </div>
@@ -383,19 +383,19 @@
 
   <div id="tabApostas" class="tab-pane" style="display:none">
     <section class="fixtures-panel">
-      <h2>Próximos jogos</h2>
-      <p class="stats-sub">Toque em "Ver estatísticas" pra puxar a forma recente, gols e ambos marcam de cada lado. São dados pro seu palpite — não é recomendação.</p>
-      <div id="fixturesList"><p class="stats-msg">Carregando jogos…</p></div>
+      <h2>PrÃ³ximos jogos</h2>
+      <p class="stats-sub">Toque em "Ver estatÃ­sticas" pra puxar a forma recente, gols e ambos marcam de cada lado. SÃ£o dados pro seu palpite â nÃ£o Ã© recomendaÃ§Ã£o.</p>
+      <div id="fixturesList"><p class="stats-msg">Carregando jogosâ¦</p></div>
     </section>
 
     <section class="stats-panel">
       <div class="stats-head">
-        <h2>Ou compare duas seleções livremente</h2>
-        <p class="stats-sub">Pra rodadas futuras ou qualquer confronto que não esteja na lista acima.</p>
+        <h2>Ou compare duas seleÃ§Ãµes livremente</h2>
+        <p class="stats-sub">Pra rodadas futuras ou qualquer confronto que nÃ£o esteja na lista acima.</p>
       </div>
       <div class="stats-pickers">
         <select id="teamA"></select>
-        <span class="vs">×</span>
+        <span class="vs">Ã</span>
         <select id="teamB"></select>
         <button id="compareBtn">Comparar</button>
       </div>
@@ -404,16 +404,41 @@
   </div>
 
   <footer>
-    Posições recalculadas automaticamente conforme os jogos avançam — não é resultado final, é a foto do momento.
-    Fonte ao vivo: API pública e independente de terceiros (não oficial da FIFA); se ela ficar fora do ar, esta página
-    volta a mostrar a última foto salva localmente. Construído para rodar como página estática (GitHub Pages / Netlify).
+    PosiÃ§Ãµes recalculadas automaticamente conforme os jogos avanÃ§am â nÃ£o Ã© resultado final, Ã© a foto do momento.
+    Fonte ao vivo: API pÃºblica e independente de terceiros (nÃ£o oficial da FIFA); se ela ficar fora do ar, esta pÃ¡gina
+    volta a mostrar a Ãºltima foto salva localmente. ConstruÃ­do para rodar como pÃ¡gina estÃ¡tica (GitHub Pages / Netlify).
   </footer>
 </div>
 
 <script>
-/* ====================== CONFIGURAÇÃO ====================== */
-const LIVE_URL = "https://www.thesportsdb.com/api/v1/json/123/lookuptable.php?l=4429&s=2026"; // TheSportsDB, chave de teste pública "123", sem cadastro
+/* ====================== CONFIGURAÃÃO ====================== */
+// A TheSportsDB limita endpoints de lista (tabela, prÃ³ximos jogos, Ãºltimos jogos)
+// a 1 resultado no plano gratuito. O Ãºnico que devolve tudo Ã© por rodada
+// (eventsround.php), entÃ£o toda a pÃ¡gina Ã© construÃ­da a partir dele.
+// Cobre as 3 rodadas da fase de grupos; se o Mundial avanÃ§ar pro mata-mata,
+// essa lista de rodadas precisa ser estendida.
+const ROUNDS = [1, 2, 3];
+const ROUND_URL = (r) => `https://www.thesportsdb.com/api/v1/json/123/eventsround.php?id=4429&r=${r}&s=2026`;
 const REFRESH_MS = 60000; // 60s
+
+// Os 12 grupos com os nomes de seleÃ§Ã£o exatamente como a TheSportsDB usa
+// (conferido nos prÃ³prios eventos retornados pela API).
+const GROUPS = {
+  A: ["Mexico", "South Korea", "Czech Republic", "South Africa"],
+  B: ["Canada", "Switzerland", "Bosnia and Herzegovina", "Qatar"],
+  C: ["Brazil", "Morocco", "Scotland", "Haiti"],
+  D: ["USA", "Australia", "Paraguay", "Turkey"],
+  E: ["Germany", "Ivory Coast", "Ecuador", "Curacao"],
+  F: ["Netherlands", "Sweden", "Japan", "Tunisia"],
+  G: ["New Zealand", "Iran", "Belgium", "Egypt"],
+  H: ["Uruguay", "Saudi Arabia", "Spain", "Cape Verde"],
+  I: ["Norway", "France", "Senegal", "Iraq"],
+  J: ["Argentina", "Austria", "Jordan", "Algeria"],
+  K: ["Colombia", "DR Congo", "Portugal", "Uzbekistan"],
+  L: ["England", "Ghana", "Panama", "Croatia"]
+};
+const TEAM_TO_GROUP = {};
+Object.entries(GROUPS).forEach(([letter, teams])=> teams.forEach(t=> TEAM_TO_GROUP[t] = letter));
 
 /* ====================== SNAPSHOT DE RESERVA ======================
    Usado se a API ao vivo estiver fora do ar. Atualize manualmente
@@ -477,69 +502,52 @@ let currentData = null;
 let currentSource = "none"; // "live" | "cache" | "none"
 let lastFetchedAt = null;
 
-/* Tenta normalizar formatos diferentes que a API ao vivo possa devolver.
-   Se a resposta não bater com nenhum formato conhecido, retorna null
-   e a página cai automaticamente para o snapshot de reserva. */
-function normalizeLivePayload(raw){
-  try{
-    // Formato real da TheSportsDB: { "table": [ {strTeam, intWin, intDraw, intLoss, intPoints, strGroup, ...} ] }
-    if(raw && Array.isArray(raw.table) && raw.table.length){
-      const rows = raw.table.map(t=>({
-        rank: Number(t.intRank ?? t.intPosition ?? 0),
-        team: { name: t.strTeam || t.strTeamName || "?", abbreviation: "" },
-        wins: Number(t.intWin ?? 0),
-        losses: Number(t.intLoss ?? 0),
-        draws: Number(t.intDraw ?? 0),
-        points: Number(t.intPoints ?? 0),
-        group: t.strGroup || t.strDivision || null
-      }));
-      const withGroup = rows.filter(r=> r.group);
-      // Só aceitamos o payload ao vivo se a maioria dos times tiver grupo identificado;
-      // sem isso não dá pra montar as tabelas por grupo com confiança.
-      if(withGroup.length >= rows.length * 0.7){
-        // normaliza nomes de grupo tipo "Group A" -> "A"
-        withGroup.forEach(r=> r.group = String(r.group).replace(/group/i,"").trim());
-        return withGroup;
-      }
-      return null;
-    }
-    if(Array.isArray(raw) && raw[0] && raw[0].group && ("points" in raw[0])){
-      return raw;
-    }
-    if(raw && Array.isArray(raw.standings)){
-      return raw.standings;
-    }
-    if(raw && raw.groups && typeof raw.groups === "object"){
-      const out = [];
-      Object.entries(raw.groups).forEach(([letter, teams])=>{
-        (teams||[]).forEach((t, i)=>{
-          out.push({
-            rank: t.rank ?? (i+1),
-            team: { name: t.name || t.team || t.teamName || "?", abbreviation: t.abbreviation || t.code || "" },
-            wins: t.wins ?? t.w ?? 0,
-            losses: t.losses ?? t.l ?? 0,
-            draws: t.draws ?? t.d ?? 0,
-            points: t.points ?? t.pts ?? 0,
-            group: letter
-          });
-        });
-      });
-      if(out.length) return out;
-    }
-    return null;
-  }catch(e){
-    return null;
-  }
+/* ====================== BUSCA E MONTAGEM DOS DADOS ====================== */
+// Cache compartilhado de todos os eventos (jogos) das rodadas, usado por
+// todas as abas da pÃ¡gina â assim a gente busca uma vez sÃ³ e reaproveita.
+let allEvents = [];
+
+async function fetchAllRounds(){
+  const results = await Promise.all(ROUNDS.map(r=>
+    fetch(ROUND_URL(r), { cache:"no-store" })
+      .then(res=> res.ok ? res.json() : { events: [] })
+      .catch(()=> ({ events: [] }))
+  ));
+  const events = results.flatMap(d=> d.events || []);
+  if(!events.length) throw new Error("nenhum jogo retornado pela API");
+  return events;
+}
+
+function buildStandingsFromEvents(events){
+  const table = {};
+  Object.keys(GROUPS).forEach(letter=>{
+    GROUPS[letter].forEach(name=>{
+      table[name] = { team:{ name }, group: letter, wins:0, draws:0, losses:0, points:0, gf:0, ga:0 };
+    });
+  });
+
+  events
+    .filter(e=> e && e.intHomeScore !== null && e.intHomeScore !== undefined && e.intAwayScore !== null && e.intAwayScore !== undefined)
+    .forEach(e=>{
+      const home = table[e.strHomeTeam];
+      const away = table[e.strAwayTeam];
+      if(!home || !away) return; // jogo fora do mapeamento de grupos (ex: mata-mata)
+      const hs = Number(e.intHomeScore), as = Number(e.intAwayScore);
+      home.gf += hs; home.ga += as;
+      away.gf += as; away.ga += hs;
+      if(hs > as){ home.wins++; away.losses++; home.points += 3; }
+      else if(hs < as){ away.wins++; home.losses++; away.points += 3; }
+      else { home.draws++; away.draws++; home.points += 1; away.points += 1; }
+    });
+
+  return Object.values(table);
 }
 
 async function fetchLive(){
   try{
-    const res = await fetch(LIVE_URL, { cache:"no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const raw = await res.json();
-    const normalized = normalizeLivePayload(raw);
-    if(!normalized) throw new Error("formato inesperado da API");
-    currentData = normalized;
+    const events = await fetchAllRounds();
+    allEvents = events;
+    currentData = buildStandingsFromEvents(events);
     currentSource = "live";
     lastFetchedAt = new Date();
   }catch(err){
@@ -552,6 +560,7 @@ async function fetchLive(){
   }
   render();
   updateStatus();
+  renderFixturesAndProbabilities();
 }
 
 function updateStatus(){
@@ -559,9 +568,9 @@ function updateStatus(){
   const text = document.getElementById("statusText");
   const lu = document.getElementById("lastUpdated");
   dot.className = "dot " + (currentSource === "live" ? "live" : currentSource === "cache" ? "cache" : "off");
-  text.textContent = currentSource === "live" ? "ao vivo" : currentSource === "cache" ? "offline · usando última foto salva" : "sem conexão";
+  text.textContent = currentSource === "live" ? "ao vivo" : currentSource === "cache" ? "offline Â· usando Ãºltima foto salva" : "sem conexÃ£o";
   if(lastFetchedAt){
-    lu.textContent = "última atualização: " + lastFetchedAt.toLocaleString("pt-BR", { dateStyle:"short", timeStyle:"medium" });
+    lu.textContent = "Ãºltima atualizaÃ§Ã£o: " + lastFetchedAt.toLocaleString("pt-BR", { dateStyle:"short", timeStyle:"medium" });
   }
 }
 
@@ -571,8 +580,8 @@ function computeZones(standings){
     byGroup[s.group] = byGroup[s.group] || [];
     byGroup[s.group].push(s);
   });
-  // Recalcula a posição dentro do grupo pelos pontos (não confiamos no campo "rank"
-  // vindo da fonte ao vivo, pois nem toda API garante que ele já vem por grupo).
+  // Recalcula a posiÃ§Ã£o dentro do grupo pelos pontos (nÃ£o confiamos no campo "rank"
+  // vindo da fonte ao vivo, pois nem toda API garante que ele jÃ¡ vem por grupo).
   Object.values(byGroup).forEach(arr=>{
     arr.sort((a,b)=> b.points - a.points || b.wins - a.wins || a.losses - b.losses);
     arr.forEach((t, i)=> t._pos = i + 1);
@@ -589,7 +598,7 @@ function computeZones(standings){
 
 function render(){
   const container = document.getElementById("groupsContainer");
-  if(!currentData){ container.innerHTML = "<p style='color:var(--text-dim)'>Carregando…</p>"; return; }
+  if(!currentData){ container.innerHTML = "<p style='color:var(--text-dim)'>Carregandoâ¦</p>"; return; }
 
   const { byGroup, bubbleSet } = computeZones(currentData);
   const letters = Object.keys(byGroup).sort();
@@ -615,7 +624,7 @@ function render(){
       </div>
       <table>
         <thead><tr>
-          <th>Seleção</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">Pts</th>
+          <th>SeleÃ§Ã£o</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">Pts</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -623,19 +632,19 @@ function render(){
   }).join("");
 }
 
-/* ====================== PAINEL DE ESTATÍSTICAS ====================== */
-// IDs reais das seleções na TheSportsDB (conferidos na página da liga 4429).
+/* ====================== PAINEL DE ESTATÃSTICAS ====================== */
+// Nome em portuguÃªs (exibido) -> nome exato usado pela TheSportsDB nos eventos.
 const TEAMS = {
-  "Alemanha":133907, "Argélia":134516, "Argentina":134509, "Austrália":134500, "Áustria":135986,
-  "Bélgica":134515, "Bósnia e Herzegovina":134510, "Brasil":134496, "Cabo Verde":136477, "Canadá":140073,
-  "Catar":136472, "Colômbia":134501, "Coreia do Sul":134517, "Costa do Marfim":134502, "Croácia":133912,
-  "Curaçao":140271, "Egito":136138, "Equador":134507, "Escócia":136450, "Espanha":133909,
-  "Estados Unidos":134514, "França":133913, "Gana":134513, "Haiti":140175, "Holanda":133905,
-  "Inglaterra":133914, "Irã":134511, "Iraque":140148, "Japão":134503, "Jordânia":140145,
-  "Marrocos":136139, "México":134497, "Noruega":136516, "Nova Zelândia":137449, "Panamá":136141,
-  "Paraguai":136471, "Portugal":133908, "Arábia Saudita":136137, "Senegal":136143, "África do Sul":136482,
-  "Suécia":133916, "Suíça":134506, "Tunísia":136142, "Turquia":135985, "Uruguai":134504,
-  "Uzbequistão":140151, "República Tcheca":133904, "RD Congo":136475
+  "Alemanha":"Germany", "ArgÃ©lia":"Algeria", "Argentina":"Argentina", "AustrÃ¡lia":"Australia", "Ãustria":"Austria",
+  "BÃ©lgica":"Belgium", "BÃ³snia e Herzegovina":"Bosnia and Herzegovina", "Brasil":"Brazil", "Cabo Verde":"Cape Verde", "CanadÃ¡":"Canada",
+  "Catar":"Qatar", "ColÃ´mbia":"Colombia", "Coreia do Sul":"South Korea", "Costa do Marfim":"Ivory Coast", "CroÃ¡cia":"Croatia",
+  "CuraÃ§ao":"Curacao", "Egito":"Egypt", "Equador":"Ecuador", "EscÃ³cia":"Scotland", "Espanha":"Spain",
+  "Estados Unidos":"USA", "FranÃ§a":"France", "Gana":"Ghana", "Haiti":"Haiti", "Holanda":"Netherlands",
+  "Inglaterra":"England", "IrÃ£":"Iran", "Iraque":"Iraq", "JapÃ£o":"Japan", "JordÃ¢nia":"Jordan",
+  "Marrocos":"Morocco", "MÃ©xico":"Mexico", "Noruega":"Norway", "Nova ZelÃ¢ndia":"New Zealand", "PanamÃ¡":"Panama",
+  "Paraguai":"Paraguay", "Portugal":"Portugal", "ArÃ¡bia Saudita":"Saudi Arabia", "Senegal":"Senegal", "Ãfrica do Sul":"South Africa",
+  "SuÃ©cia":"Sweden", "SuÃ­Ã§a":"Switzerland", "TunÃ­sia":"Tunisia", "Turquia":"Turkey", "Uruguai":"Uruguay",
+  "UzbequistÃ£o":"Uzbekistan", "RepÃºblica Tcheca":"Czech Republic", "RD Congo":"DR Congo"
 };
 
 function populateSelects(){
@@ -649,23 +658,18 @@ function populateSelects(){
   selB.value = "Argentina";
 }
 
-function extractEventsArray(raw){
-  if(!raw) return [];
-  return raw.results || raw.events || raw.lastEvent || raw.event || [];
-}
-
-async function fetchTeamStats(teamId){
-  const url = `https://www.thesportsdb.com/api/v1/json/123/eventslast.php?id=${teamId}`;
-  const res = await fetch(url, { cache:"no-store" });
-  if(!res.ok) throw new Error("HTTP " + res.status);
-  const raw = await res.json();
-  const events = extractEventsArray(raw)
-    .filter(e=> e && e.intHomeScore !== null && e.intAwayScore !== null && e.intHomeScore !== undefined)
-    .slice(0, 5);
+// Calcula a forma recente de um time a partir do cache de eventos jÃ¡ buscado
+// (nÃ£o faz nenhuma chamada nova Ã  API â por isso Ã© instantÃ¢neo e nÃ£o tem limite).
+function computeTeamStats(teamName, limit=5){
+  const events = allEvents
+    .filter(e=> e && (e.strHomeTeam === teamName || e.strAwayTeam === teamName))
+    .filter(e=> e.intHomeScore !== null && e.intHomeScore !== undefined && e.intAwayScore !== null && e.intAwayScore !== undefined)
+    .sort((a,b)=> new Date(b.dateEvent) - new Date(a.dateEvent))
+    .slice(0, limit);
 
   let scored = 0, conceded = 0, btts = 0, over25 = 0;
   const form = events.map(e=>{
-    const isHome = String(e.idHomeTeam) === String(teamId);
+    const isHome = e.strHomeTeam === teamName;
     const gf = Number(isHome ? e.intHomeScore : e.intAwayScore);
     const ga = Number(isHome ? e.intAwayScore : e.intHomeScore);
     scored += gf; conceded += ga;
@@ -685,9 +689,9 @@ async function fetchTeamStats(teamId){
   };
 }
 
-/* Estimativa estatística simples (modelo de Poisson) a partir dos gols médios
-   dos últimos 5 jogos de cada lado. NÃO é previsão garantida — é só matemática
-   básica sobre uma amostra pequena, sem considerar lesões, escalação, motivação etc. */
+/* Estimativa estatÃ­stica simples (modelo de Poisson) a partir dos gols mÃ©dios
+   dos jogos recentes de cada lado. NÃO Ã© previsÃ£o garantida â Ã© sÃ³ matemÃ¡tica
+   bÃ¡sica sobre uma amostra pequena, sem considerar lesÃµes, escalaÃ§Ã£o, motivaÃ§Ã£o etc. */
 function poissonPMF(k, lambda){
   let fact = 1;
   for(let i=2;i<=k;i++) fact *= i;
@@ -735,37 +739,30 @@ function renderStatCard(name, stats){
   const badges = stats.form.map(r=> `<span class="form-badge ${r}">${r}</span>`).join("");
   return `<div class="stat-card">
     <h3>${name}</h3>
-    <div class="games-note">últimos ${stats.played} jogos</div>
+    <div class="games-note">Ãºltimos ${stats.played} jogos</div>
     <div class="form-badges">${badges}</div>
-    <div class="stat-row"><span>Gols marcados (média)</span><span class="v">${stats.avgScored}</span></div>
-    <div class="stat-row"><span>Gols sofridos (média)</span><span class="v">${stats.avgConceded}</span></div>
+    <div class="stat-row"><span>Gols marcados (mÃ©dia)</span><span class="v">${stats.avgScored}</span></div>
+    <div class="stat-row"><span>Gols sofridos (mÃ©dia)</span><span class="v">${stats.avgConceded}</span></div>
     <div class="stat-row"><span>Jogos com ambos marcando</span><span class="v">${stats.bttsPct}%</span></div>
     <div class="stat-row"><span>Jogos com +2,5 gols</span><span class="v">${stats.over25Pct}%</span></div>
   </div>`;
 }
 
-async function compareTeams(){
+function compareTeams(){
   const nameA = document.getElementById("teamA").value;
   const nameB = document.getElementById("teamB").value;
-  const btn = document.getElementById("compareBtn");
   const result = document.getElementById("statsResult");
   if(nameA === nameB){
-    result.innerHTML = `<p class="stats-msg">Escolha duas seleções diferentes.</p>`;
+    result.innerHTML = `<p class="stats-msg">Escolha duas seleÃ§Ãµes diferentes.</p>`;
     return;
   }
-  btn.disabled = true;
-  result.innerHTML = `<p class="stats-msg">Buscando últimos jogos…</p>`;
-  try{
-    const [statsA, statsB] = await Promise.all([
-      fetchTeamStats(TEAMS[nameA]),
-      fetchTeamStats(TEAMS[nameB])
-    ]);
-    result.innerHTML = renderStatCard(nameA, statsA) + renderStatCard(nameB, statsB);
-  }catch(err){
-    result.innerHTML = `<p class="stats-msg">Não consegui buscar agora (${err.message}). Tenta de novo em alguns segundos.</p>`;
-  }finally{
-    btn.disabled = false;
+  if(!allEvents.length){
+    result.innerHTML = `<p class="stats-msg">Ainda carregando os dados da Copa, tenta de novo em um instante.</p>`;
+    return;
   }
+  const statsA = computeTeamStats(TEAMS[nameA]);
+  const statsB = computeTeamStats(TEAMS[nameB]);
+  result.innerHTML = renderStatCard(nameA, statsA) + renderStatCard(nameB, statsB);
 }
 
 /* ====================== ABAS ====================== */
@@ -778,15 +775,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   });
 });
 
-/* ====================== PRÓXIMOS JOGOS ====================== */
-function extractList(raw, keys){
-  if(!raw) return [];
-  for(const k of keys){
-    if(Array.isArray(raw[k])) return raw[k];
-  }
-  return [];
-}
-
+/* ====================== PRÃXIMOS JOGOS ====================== */
 function fmtDateTime(dateStr, timeStr){
   try{
     const iso = timeStr ? `${dateStr}T${timeStr}Z` : `${dateStr}T00:00:00Z`;
@@ -796,62 +785,46 @@ function fmtDateTime(dateStr, timeStr){
   }catch(e){ return dateStr || "data a definir"; }
 }
 
-async function loadUpcomingFixtures(){
+// Monta a lista de prÃ³ximos jogos e calcula as probabilidades â tudo a partir
+// do cache de eventos jÃ¡ buscado (allEvents), sem nenhuma chamada extra Ã  API.
+function renderFixturesAndProbabilities(){
   const list = document.getElementById("fixturesList");
-  try{
-    const res = await fetch("https://www.thesportsdb.com/api/v1/json/123/eventsnextleague.php?id=4429", { cache:"no-store" });
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const raw = await res.json();
-    let events = extractList(raw, ["events", "results"]);
-    events = events
-      .filter(e=> e && e.idHomeTeam && e.idAwayTeam)
-      .sort((a,b)=> new Date(a.dateEvent + "T" + (a.strTime||"00:00:00")) - new Date(b.dateEvent + "T" + (b.strTime||"00:00:00")))
-      .slice(0, 8); // limita a 8 pra não estourar o limite gratuito da API
+  if(!allEvents.length){
+    list.innerHTML = `<p class="stats-msg">Carregando jogosâ¦</p>`;
+    return;
+  }
 
-    if(!events.length){
-      list.innerHTML = `<p class="stats-msg">Não encontrei jogos futuros cadastrados agora. Tenta de novo mais tarde, ou usa o comparador livre abaixo.</p>`;
-      return;
-    }
+  const upcoming = allEvents
+    .filter(e=> e && e.strHomeTeam && e.strAwayTeam && (e.intHomeScore === null || e.intHomeScore === undefined))
+    .sort((a,b)=> new Date(a.dateEvent + "T" + (a.strTime||"00:00:00")) - new Date(b.dateEvent + "T" + (b.strTime||"00:00:00")))
+    .slice(0, 8);
 
-    list.innerHTML = `<p class="prob-note">As barras abaixo são uma estimativa estatística simples (modelo de Poisson) a partir da média de gols dos últimos 5 jogos de cada seleção. Não considera lesões, escalação ou motivação, e não é garantia de resultado — é só leitura de dados pro seu palpite.</p>` +
-      events.map((e, i)=>{
+  if(!upcoming.length){
+    list.innerHTML = `<p class="stats-msg">NÃ£o encontrei jogos futuros nas rodadas cobertas por esta pÃ¡gina (fase de grupos). Usa o comparador livre abaixo enquanto isso.</p>`;
+    return;
+  }
+
+  list.innerHTML = `<p class="prob-note">As barras abaixo sÃ£o uma estimativa estatÃ­stica simples (modelo de Poisson) a partir da mÃ©dia de gols dos jogos recentes de cada seleÃ§Ã£o na Copa. NÃ£o considera lesÃµes, escalaÃ§Ã£o ou motivaÃ§Ã£o, e nÃ£o Ã© garantia de resultado â Ã© sÃ³ leitura de dados pro seu palpite.</p>` +
+    upcoming.map(e=>{
       const when = fmtDateTime(e.dateEvent, e.strTime);
-      return `<div class="fixture-card" data-idx="${i}">
+      const sHome = computeTeamStats(e.strHomeTeam);
+      const sAway = computeTeamStats(e.strAwayTeam);
+      const probs = computeProbabilities(sHome, sAway);
+      return `<div class="fixture-card">
         <div class="fixture-top">
           <span class="fixture-when">${when}</span>
-          <span class="fixture-match">${e.strHomeTeam} × ${e.strAwayTeam}</span>
+          <span class="fixture-match">${e.strHomeTeam} Ã ${e.strAwayTeam}</span>
         </div>
-        <div class="fixture-stats" id="fixtureStats${i}"><p class="stats-msg">Calculando…</p></div>
+        <div class="fixture-stats">
+          ${renderProbBar(e.strHomeTeam, e.strAwayTeam, probs)}
+          <div class="fixture-meta">
+            <span>${e.strHomeTeam}: ${sHome.played ? sHome.avgScored+" gols/jogo marcados, "+sHome.bttsPct+"% ambos marcam" : "sem jogos na Copa ainda"}</span>
+            <span>${e.strAwayTeam}: ${sAway.played ? sAway.avgScored+" gols/jogo marcados, "+sAway.bttsPct+"% ambos marcam" : "sem jogos na Copa ainda"}</span>
+          </div>
+        </div>
       </div>`;
     }).join("");
-
-    // Busca os dados de cada confronto em sequência (não em paralelo), com uma
-    // pequena pausa entre cada um, pra não sobrecarregar a API gratuita.
-    for(let i=0; i<events.length; i++){
-      const e = events[i];
-      const slot = document.getElementById(`fixtureStats${i}`);
-      try{
-        const [sHome, sAway] = await Promise.all([
-          fetchTeamStats(e.idHomeTeam),
-          fetchTeamStats(e.idAwayTeam)
-        ]);
-        const probs = computeProbabilities(sHome, sAway);
-        slot.innerHTML = renderProbBar(e.strHomeTeam, e.strAwayTeam, probs) +
-          `<div class="fixture-meta">
-            <span>${e.strHomeTeam}: ${sHome.played ? sHome.avgScored+" gols/jogo marcados, "+sHome.bttsPct+"% ambos marcam" : "sem dados recentes"}</span>
-            <span>${e.strAwayTeam}: ${sAway.played ? sAway.avgScored+" gols/jogo marcados, "+sAway.bttsPct+"% ambos marcam" : "sem dados recentes"}</span>
-          </div>`;
-      }catch(err){
-        slot.innerHTML = `<p class="stats-msg">Não consegui calcular esse confronto (${err.message}).</p>`;
-      }
-      if(i < events.length - 1) await new Promise(r=> setTimeout(r, 300));
-    }
-  }catch(err){
-    list.innerHTML = `<p class="stats-msg">Não consegui carregar os próximos jogos agora (${err.message}). Usa o comparador livre abaixo enquanto isso.</p>`;
-  }
 }
-
-loadUpcomingFixtures();
 
 populateSelects();
 document.getElementById("compareBtn").addEventListener("click", compareTeams);
